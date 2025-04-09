@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title >Dashboard de Vendas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1 class="title1" >DASHBOARD DE VENDAS</h1>
+
+    <form method="post">
+        <label for="ano">Ano:</label>
+        <input type="number" name="ano" value="{{ ano_selecionado }}" required>
+        <label for="mes">Mês:</label>
+        <input type="number" name="mes" min="1" max="12" value="{{ mes_selecionado }}" required>
+        <button type="submit">Filtrar</button>
+        <button type="button" onclick="window.print()">Imprimir Gráficos</button>
+    </form>
+
+    <h2>Total Geral do Mês por Caixa</h2>
+    <canvas id="graficoMes"></canvas>
+
+    <h2>Vendas Semanais por Caixa</h2>
+    <div class="graficos-semanal">
+    {% for grafico in graficos_semanais %}
+        <div class="grafico">
+        <h3>Semana iniciando em {{ grafico.semana }}</h3>
+        <canvas id="graficoSemana{{ loop.index }}"></canvas>
+        </div>
+    {% endfor %}
+    </div>
+    <h2>Últimas 10 Vendas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Valor</th>
+                <th>Caixa</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venda in vendas %}
+            <tr>
+                <td>R$ {{ venda.Valor }}</td>
+                <td>{{ venda.Caixa }}</td>
+                <td>{{ venda.Data }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function gerarGraficoPizza(idCanvas, dados) {
+            const ctx = document.getElementById(idCanvas).getContext('2d');
+            const labels = dados.map(item => item.Caixa);
+            const valores = dados.map(item => item.Valor);
+            const total = valores.reduce((a, b) => a + b, 0);
+            const backgroundColors = ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff', '#ff9f40'];
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels.map((l, i) => `${l} - R$${valores[i]} (${((valores[i]/total)*100).toFixed(1)}%)`),
+                    datasets: [{
+                        data: valores,
+                        backgroundColor: backgroundColors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico do mês
+        gerarGraficoPizza('graficoMes', {{ grafico_mes|tojson }});
+
+        // Gráficos semanais
+        {% for grafico in graficos_semanais %}
+            gerarGraficoPizza('graficoSemana{{ loop.index }}', {{ grafico.dados|tojson }});
+        {% endfor %}
+    </script>
+</body>
+</html>
+<!-- End of dashboard.html -->
