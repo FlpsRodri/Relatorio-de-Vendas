@@ -3,7 +3,7 @@ Relatorio mensal e semanal sobre o total de vendas separado por caixa, exibido e
 
 ---
 
-### README.md
+### README
 
 ```markdown
 # Sistema de Vendas
