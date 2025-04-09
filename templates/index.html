@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Inserir Venda</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Inserir Venda Manualmente</h1>
+
+    <form action="{{ url_for('adicionar') }}" method="post">
+        <label for="valor">Valor:</label>
+        <input type="number" name="valor" step="0.01" required>
+
+        <label for="caixa">Caixa:</label>
+        <input type="text" name="caixa" required>
+
+        <label for="data">Data:</label>
+        <input type="date" name="data" required>
+
+        <button type="submit">Adicionar Venda</button>
+    </form>
+
+    <p><a href="{{ url_for('dashboard') }}">Ir para o Dashboard 📊</a></p>
+</body>
+</html>
